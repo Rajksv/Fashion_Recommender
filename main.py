@@ -13,7 +13,7 @@ from numpy.linalg import norm
 from sklearn.neighbors import NearestNeighbors
 
 # Load combined features and image file paths
-combined_features = pickle.load(open("combined_features.pkl", "rb"))
+combined_features = pickle.load(open("image_features_embedding.pkl", "rb"))
 img_files_list = pickle.load(open("img_files.pkl", "rb"))
 
 # Initialize models
