@@ -23,14 +23,11 @@ st.title('Clothing recommender system')
 
 
 def save_file(uploaded_file):
-    
-    try:
-        st.header(os.path.join("uploader", uploaded_file.name))
-        with open(os.path.join("uploader", uploaded_file.name), 'wb') as f:
-            f.write(uploaded_file.getbuffer())
-            return 1
-    except:
-        return 0
+    st.header(os.path.join("uploader", uploaded_file.name))
+    with open(os.path.join("uploader", uploaded_file.name), 'wb') as f:
+        f.write(uploaded_file.getbuffer())
+    return 1
+
 
 
 def extract_img_features(img_path, model):
