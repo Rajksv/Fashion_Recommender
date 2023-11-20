@@ -27,13 +27,14 @@ dense121_extractor = Sequential([dense121_model, GlobalMaxPooling2D()])
 
 def extract_features(img_path, model, preprocess_func):
     img = image.load_img(img_path, target_size=(224, 224))
-    st.header("Here")
+    
     img_array = image.img_to_array(img)
     expand_img = np.expand_dims(img_array, axis=0)
     preprocessed_img = preprocess_func(expand_img)
     result_to_model = model.predict(preprocessed_img)
     flatten_result = result_to_model.flatten()
     result_normalized = flatten_result / norm(flatten_result)
+    st.header("Here")
     return result_normalized
 
 st.title('Clothing recommender system')
