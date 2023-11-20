@@ -35,9 +35,9 @@ for fashion_images in os.listdir('fashion_small/images'):
     count+=1
     if count>10000:
         break
-    images_path = os.path.join('fashion_small/images', fashion_images)
+    images_path = os.path.join('fashion_small/images', fashion_images).replace("\\", "/")
+    print(images_path)
     img_files.append(images_path)
-
 image_features = []
 
 for files in tqdm(img_files):
@@ -47,4 +47,5 @@ for files in tqdm(img_files):
     image_features.append(combined)
 
 pickle.dump(image_features, open("image_features_embedding.pkl", "wb"))
+
 pickle.dump(img_files, open("img_files.pkl", "wb"))
