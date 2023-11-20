@@ -30,7 +30,11 @@ def extract_features(img_path, model, preprocess_func):
     return result_normalized
 
 img_files = []
+count = 0
 for fashion_images in os.listdir('fashion_small/images'):
+    count+=1
+    if count>10000:
+        break
     images_path = os.path.join('fashion_small/images', fashion_images)
     img_files.append(images_path)
 
