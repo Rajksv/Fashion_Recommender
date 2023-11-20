@@ -34,7 +34,7 @@ def extract_features(img_path, model, preprocess_func):
     result_to_model = model.predict(preprocessed_img)
     flatten_result = result_to_model.flatten()
     result_normalized = flatten_result / norm(flatten_result)
-    st.header("Here")
+
     return result_normalized
 
 st.title('Clothing recommender system')
@@ -71,9 +71,12 @@ if uploaded_file is not None:
         for i, col in enumerate([col1, col2, col3, col4, col5]):
             st.header(f"Image {i+1}")
             recommended_image_path = img_files_list[indices[0][i]]
-            recommended_image = Image.open(recommended_image_path)
-            resized_recommended_image = recommended_image.resize((200, 200))
-            col.image(resized_recommended_image)
+            try:
+                recommended_image = Image.open(recommended_image_path)
+                resized_recommended_image = recommended_image.resize((200, 200))
+                col.image(resized_recommended_image)
+            except:
+            
 
     except Exception as e:
         st.error(f"Error: {e}")
