@@ -5,7 +5,7 @@ from PIL import Image
 import pickle
 import numpy as np
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.applications.resnet50 import ResNet50,ResNet152,VGG16,Dense121, preprocess_input
 from tensorflow.keras.layers import GlobalMaxPooling2D
 from tensorflow.keras.models import Sequential
 from numpy.linalg import norm

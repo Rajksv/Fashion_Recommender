@@ -1,6 +1,8 @@
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.layers import GlobalMaxPooling2D
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input as preprocess_resnet50
+from tensorflow.keras.applications.resnet import ResNet152, preprocess_input as preprocess_resnet152
+from tensorflow.keras.applications.densenet import DenseNet121, preprocess_input as preprocess_dense121
 from tensorflow.keras.models import Sequential
 import numpy as np
 from numpy.linalg import norm
@@ -8,41 +10,56 @@ import os
 from tqdm import tqdm
 import pickle
 
-model = ResNet50(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
-model.trainable = False
+# Initialize models
+resnet50_model = ResNet50(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
+resnet152_model = ResNet152(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
+dense121_model = DenseNet121(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
 
-model = Sequential([model, GlobalMaxPooling2D()])
-#model.summary()
+# Set models as non-trainable
+resnet50_model.trainable = False
+resnet152_model.trainable = False
+dense121_model.trainable = False
 
-def extract_features(img_path,model):
-    img = image.load_img(img_path,target_size=(224,224))
+# Create Sequential models with GlobalMaxPooling2D layer
+resnet50_extractor = Sequential([resnet50_model, GlobalMaxPooling2D()])
+resnet152_extractor = Sequential([resnet152_model, GlobalMaxPooling2D()])
+dense121_extractor = Sequential([dense121_model, GlobalMaxPooling2D()])
+
+# Function to extract features
+def extract_features(img_path, model, preprocess_func):
+    img = image.load_img(img_path, target_size=(224, 224))
     img_array = image.img_to_array(img)
-    expand_img = np.expand_dims(img_array,axis=0)
-    preprocessed_img = preprocess_input(expand_img)
-    result_to_resnet = model.predict(preprocessed_img)
-    flatten_result = result_to_resnet.flatten()
-    # normalizing
-    result_normlized = flatten_result / norm(flatten_result)
+    expand_img = np.expand_dims(img_array, axis=0)
+    preprocessed_img = preprocess_func(expand_img)
+    result_to_model = model.predict(preprocessed_img)
+    flatten_result = result_to_model.flatten()
+    # Normalizing
+    result_normalized = flatten_result / norm(flatten_result)
+    return result_normalized
 
-    return result_normlized
-#print(os.listdir('fashion_small/images'))
+# List of image files
+count = 0
 img_files = []
-counter = 0
+
 for fashion_images in os.listdir('fashion_small/images'):
-    if counter >= 500:
+    count+=1
+    if count > 10000:
         break
     images_path = os.path.join('fashion_small/images', fashion_images)
     img_files.append(images_path)
-    counter += 1
-    
-# extracting image features
-image_features = []
-i=0
-for files in tqdm(img_files):
-    print(i)
-    i = i+1
-    features_list = extract_features(files, model)
-    image_features.append(features_list)
 
-pickle.dump(image_features, open("image_features_embedding.pkl", "wb"))
+# Extracting and combining image features
+combined_features = []
+
+for files in tqdm(img_files):
+    features_resnet50 = extract_features(files, resnet50_extractor, preprocess_resnet50)
+    features_resnet152 = extract_features(files, resnet152_extractor, preprocess_resnet152)
+    features_dense121 = extract_features(files, dense121_extractor, preprocess_dense121)
+    
+    # Combine features
+    combined = np.concatenate([features_resnet50, features_resnet152, features_dense121])
+    combined_features.append(combined)
+
+# Saving combined features and file paths
+pickle.dump(combined_features, open("image_features_embedding.pkl", "wb"))
 pickle.dump(img_files, open("img_files.pkl", "wb"))
