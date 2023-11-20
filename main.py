@@ -76,6 +76,7 @@ if uploaded_file is not None:
                 resized_recommended_image = recommended_image.resize((200, 200))
                 col.image(resized_recommended_image)
             except:
+                st.header("Here")
             
 
     except Exception as e:
