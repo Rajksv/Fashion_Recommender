@@ -25,7 +25,7 @@ st.title('Clothing recommender system')
 def save_file(uploaded_file):
     
     try:
-        st.header(uploaded_file)
+        st.header(os.path.join("uploader", uploaded_file.name))
         with open(os.path.join("uploader", uploaded_file.name), 'wb') as f:
             f.write(uploaded_file.getbuffer())
             return 1
