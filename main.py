@@ -71,6 +71,7 @@ if uploaded_file is not None:
         for i, col in enumerate([col1, col2, col3, col4, col5]):
             st.header(f"Image {i+1}")
             recommended_image_path = img_files_list[indices[0][i]]
+            recommended_image_path = os.path.normpath(recommended_image_path)
             st.header(recommended_image_path)
             try:
                 recommended_image = Image.open(recommended_image_path)
