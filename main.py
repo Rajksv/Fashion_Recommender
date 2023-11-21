@@ -39,6 +39,50 @@ def extract_features(img_path, model, preprocess_func):
 
 st.title('Clothing recommender system')
 
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #001F3F; /* Dark Blue */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# University logo as the background image
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("logo.jpg");
+        background-size: cover;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Your personal details
+st.text("Your Personal Details Here")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 model_dict = {
     "ResNet50": (resnet50_extractor, preprocess_resnet50),
     "DenseNet121": (dense121_extractor, preprocess_dense121)
