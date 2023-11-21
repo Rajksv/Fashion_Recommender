@@ -10,7 +10,6 @@ from tensorflow.keras.layers import GlobalMaxPooling2D
 from tensorflow.keras.models import Sequential
 from numpy.linalg import norm
 from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics.pairwise import cosine_similarity
 
 # Load combined features and image file paths
 combined_features = pickle.load(open("image_features_embedding.pkl", "rb"))
@@ -65,7 +64,7 @@ if uploaded_file is not None:
 
         combined_features_uploaded = np.concatenate(combined_features_uploaded)
 
-        neighbors = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='cosine_similarity')
+        neighbors = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
         neighbors.fit(combined_features)
         distances, indices = neighbors.kneighbors([combined_features_uploaded])
 
