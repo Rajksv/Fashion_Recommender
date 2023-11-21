@@ -37,7 +37,7 @@ def extract_features(img_path, model, preprocess_func):
 
     return result_normalized
 
-st.title('Clothing recommender system')
+st.title('Fashion recommender system')
 
 st.markdown(
     """
