@@ -69,7 +69,7 @@ if uploaded_file is not None:
         normalized_distances = distances / np.max(distances)  # Normalizing distances
 
         for i, (col, norm_dist, index) in enumerate(zip([col1, col2, col3, col4, col5], normalized_distances[0], indices[0])):
-            st.header(f"Image {i+1}")
+            #st.header(f"Image {i+1}")
             recommended_image_path = img_files_list[index]
             recommended_image = Image.open(recommended_image_path)
             resized_recommended_image = recommended_image.resize((200, 200))
