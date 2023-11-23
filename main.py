@@ -68,7 +68,7 @@ if uploaded_file is not None:
         user_selection = []
 
         for i, col in enumerate([col1, col2, col3, col4, col5]):
-            st.header(f"Image {i+1}")
+            #st.header(f"Image {i+1}")
             recommended_image_path = img_files_list[indices[0][i]]
             recommended_image = Image.open(recommended_image_path)
             resized_recommended_image = recommended_image.resize((200, 200))
