@@ -39,14 +39,15 @@ sample_image_path = "C:/Users/svraj/Desktop/MBA/Sem_3/G514_Deep_Learning_for_Bus
 
 # Extract features using ResNet50
 features_resnet50 = extract_features(sample_image_path, resnet50_extractor, preprocess_resnet50)
+resnet50_features = combined_features[:, :features_resnet50.shape[0]] 
 neighbors_resnet50 = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
-neighbors_resnet50.fit(combined_features)
+neighbors_resnet50.fit(resnet50_features)
 distances_resnet50, indices_resnet50 = neighbors_resnet50.kneighbors([features_resnet50])
 
 # Extract features using DenseNet121
 features_dense121 = extract_features(sample_image_path, dense121_extractor, preprocess_dense121)
 neighbors_dense121 = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
-neighbors_dense121.fit(combined_features)
+neighbors_dense121.fit(combined_features[:, 2048:])
 distances_dense121, indices_dense121 = neighbors_dense121.kneighbors([features_dense121])
 
 # Combined features
