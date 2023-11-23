@@ -65,19 +65,15 @@ if uploaded_file is not None:
         distances, indices = neighbors.kneighbors([combined_features_uploaded])
 
         col1, col2, col3, col4, col5 = st.columns(5)
-        user_selection = []
 
-        for i, col in enumerate([col1, col2, col3, col4, col5]):
-            #st.header(f"Image {i+1}")
-            recommended_image_path = img_files_list[indices[0][i]]
+        normalized_distances = distances / np.max(distances)  # Normalizing distances
+
+        for i, (col, norm_dist, index) in enumerate(zip([col1, col2, col3, col4, col5], normalized_distances[0], indices[0])):
+            st.header(f"Image {i+1}")
+            recommended_image_path = img_files_list[index]
             recommended_image = Image.open(recommended_image_path)
             resized_recommended_image = recommended_image.resize((200, 200))
-            col.image(resized_recommended_image)
-            selected = col.checkbox(f"Select Image {i+1}")
-            user_selection.append(selected)
-
-        accuracy = sum(user_selection) / len(user_selection)
-        st.text(f"Nearest Neighbor Accuracy: {accuracy * 100:.2f}%")
+            col.image(resized_recommended_image, f"Normalized Distance: {norm_dist:.4f}")
 
     except Exception as e:
         st.error(f"Error: {e}")
