@@ -35,7 +35,12 @@ def extract_features(img_path, model, preprocess_func):
     result_normalized = flatten_result / norm(flatten_result)
     return result_normalized
 
-st.title('Clothing recommender system')
+st.title('Fashion recommender system')
+
+model_dict = {
+    "ResNet50": (resnet50_extractor, preprocess_resnet50),
+    "DenseNet121": (dense121_extractor, preprocess_dense121)
+}
 
 uploaded_file = st.file_uploader("Choose your image")
 if uploaded_file is not None:
@@ -48,49 +53,27 @@ if uploaded_file is not None:
         resized_image = show_image.resize((400, 400))
         st.image(resized_image)
 
-        # Extract features using ResNet50
-        features_resnet50 = extract_features(img_path, resnet50_extractor, preprocess_resnet50)
-        neighbors_resnet50 = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
-        neighbors_resnet50.fit(combined_features)
-        distances_resnet50, indices_resnet50 = neighbors_resnet50.kneighbors([features_resnet50])
+        combined_features_uploaded = []
+        for model_name, (extractor, preprocess_func) in model_dict.items():
+            features = extract_features(img_path, extractor, preprocess_func)
+            combined_features_uploaded.append(features)
 
-        # Extract features using DenseNet121
-        features_dense121 = extract_features(img_path, dense121_extractor, preprocess_dense121)
-        neighbors_dense121 = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
-        neighbors_dense121.fit(combined_features)
-        distances_dense121, indices_dense121 = neighbors_dense121.kneighbors([features_dense121])
+        combined_features_uploaded = np.concatenate(combined_features_uploaded)
 
-        # Combined features
-        combined_features_uploaded = np.concatenate([features_resnet50, features_dense121])
-        neighbors_combined = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
-        neighbors_combined.fit(combined_features)
-        distances_combined, indices_combined = neighbors_combined.kneighbors([combined_features_uploaded])
+        neighbors = NearestNeighbors(n_neighbors=5, algorithm='brute', metric='euclidean')
+        neighbors.fit(combined_features)
+        distances, indices = neighbors.kneighbors([combined_features_uploaded])
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4, col5 = st.columns(5)
 
-        # Display recommendations for ResNet50
-        col1.header("ResNet50 Recommendations")
-        for i, (norm_dist, index) in enumerate(zip(distances_resnet50[0], indices_resnet50[0])):
+        normalized_distances = distances / np.max(distances)  # Normalizing distances
+
+        for i, (col, norm_dist, index) in enumerate(zip([col1, col2, col3, col4, col5], normalized_distances[0], indices[0])):
+            #st.header(f"Image {i+1}")
             recommended_image_path = img_files_list[index]
             recommended_image = Image.open(recommended_image_path)
             resized_recommended_image = recommended_image.resize((200, 200))
-            col1.image(resized_recommended_image, f"Normalized Distance: {norm_dist:.4f}")
-
-        # Display recommendations for DenseNet121
-        col2.header("DenseNet121 Recommendations")
-        for i, (norm_dist, index) in enumerate(zip(distances_dense121[0], indices_dense121[0])):
-            recommended_image_path = img_files_list[index]
-            recommended_image = Image.open(recommended_image_path)
-            resized_recommended_image = recommended_image.resize((200, 200))
-            col2.image(resized_recommended_image, f"Normalized Distance: {norm_dist:.4f}")
-
-        # Display recommendations for combined features
-        col3.header("Combined Recommendations")
-        for i, (norm_dist, index) in enumerate(zip(distances_combined[0], indices_combined[0])):
-            recommended_image_path = img_files_list[index]
-            recommended_image = Image.open(recommended_image_path)
-            resized_recommended_image = recommended_image.resize((200, 200))
-            col3.image(resized_recommended_image, f"Normalized Distance: {norm_dist:.4f}")
+            col.image(resized_recommended_image, f"Normalized Distance: {norm_dist:.4f}")
 
     except Exception as e:
         st.error(f"Error: {e}")
